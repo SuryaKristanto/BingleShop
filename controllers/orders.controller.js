@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const {Items, sequelize, Orders, OrderItems, Users} = require('../db/models')
+const {Items, sequelize, Orders, OrderItems} = require('../db/models')
 
 const createOrder = async(req, res, next) => {
     try {
