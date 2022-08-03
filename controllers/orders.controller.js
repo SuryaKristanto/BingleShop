@@ -39,7 +39,7 @@ const createOrder = async(req, res, next) => {
                 existItems.map(async item => {
                     const selectedPayload = items.find(val => val.item_id === item.id)
     
-                    // deduct stok item
+                    // deduct qty item
                     await Items.update({
                         qty: item.qty - selectedPayload.qty
                     }, {
@@ -56,6 +56,16 @@ const createOrder = async(req, res, next) => {
                         qty_order: selectedPayload.qty
                     }, {
                         transaction: trx
+                    })
+
+                    // update total price
+                    await Orders.update({
+                        total_price: selectedPayload.qty * item.price
+                    }, {
+                        where: {
+                            
+                        },
+                        transaction: trx 
                     })
                 })
             )
