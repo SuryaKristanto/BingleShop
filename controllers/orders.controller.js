@@ -82,8 +82,6 @@ const createOrder = async(req, res, next) => {
 
 const updatePayment = async(req, res, next) => {
     try {
-        const bodies = req.body
-
         const existOrder = await Orders.findAll({
             where: {
                 user_id: req.user_id,
@@ -92,7 +90,7 @@ const updatePayment = async(req, res, next) => {
         })
         if (existOrder.length < 1) {
             throw {
-                code: 400,
+                code: 404,
                 message: "Tidak ada order"
             }
         }
