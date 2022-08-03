@@ -80,6 +80,41 @@ const createOrder = async(req, res, next) => {
     }
 }
 
+const updatePayment = async(req, res, next) => {
+    try {
+        const bodies = req.body
+
+        const existOrder = await Orders.findAll({
+            where: {
+                user_id: req.user_id,
+                status: 'Menunggu Pembayaran'
+            },
+        })
+        if (existOrder.length < 1) {
+            throw {
+                code: 400,
+                message: "Tidak ada order"
+            }
+        }
+        await Orders.update({
+            status: 'Sedang Diproses'
+        }, {
+            where: {
+                user_id: req.user_id
+            }
+        })
+
+        return res.status(302).json({
+            code: 302,
+            message: 'Pembayaran Berhasil',
+
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
-    createOrder
+    createOrder,
+    updatePayment
 }
