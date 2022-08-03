@@ -14,7 +14,7 @@ const createOrder = async(req, res, next) => {
             where: {
                 id: {
                     [Op.in]: itemIds
-                },
+                }
             }
         })
 
@@ -28,7 +28,7 @@ const createOrder = async(req, res, next) => {
         await sequelize.transaction(async trx => {
             // create order dan 
             const order = await Orders.create({
-                user_id: 1,
+                user_id: req.user_id,
                 order_no: Math.floor((Math.random() * 100) + 1),
                 status: 'Menunggu Pembayaran',
             }, {
