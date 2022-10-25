@@ -1,41 +1,45 @@
-const Sequelize = require('sequelize')
-const sequelize = require('./sequelize')
+const Sequelize = require("sequelize");
+const sequelize = require("./sequelize");
 
 class Orders extends Sequelize.Model {}
 
-Orders.init({
+Orders.init(
+  {
     id: {
-        type: Sequelize.DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        unique: true
+      type: Sequelize.DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      unique: true,
+      allowNull: false,
     },
     user_id: {
-        type: Sequelize.DataTypes.INTEGER,
-        references: {
-            model: 'users',
-            key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+      type: Sequelize.DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
     },
     order_no: {
-        type: Sequelize.DataTypes.INTEGER,
-        unique: true
+      type: Sequelize.DataTypes.INTEGER,
+      unique: true,
     },
     status: {
-        type: Sequelize.DataTypes.STRING
+      type: Sequelize.DataTypes.STRING,
     },
     total_price: {
-        type: Sequelize.DataTypes.INTEGER
+      type: Sequelize.DataTypes.INTEGER,
     },
-}, {
+  },
+  {
     sequelize: sequelize,
     timestamps: true,
     underscored: true,
     paranoid: true,
     freezeTableName: true,
-    tableName: 'orders'
-})
+    tableName: "orders",
+  }
+);
 
-module.exports = Orders
+module.exports = Orders;
