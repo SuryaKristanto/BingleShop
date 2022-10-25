@@ -20,8 +20,8 @@ const createOrder = async (req, res, next) => {
     console.log(existItems);
     if (existItems.length !== items.length) {
       throw {
-        code: 400,
-        message: "ada item yang tidak ditemukan",
+        code: 404,
+        message: "item not found",
       };
     }
 
@@ -31,7 +31,7 @@ const createOrder = async (req, res, next) => {
         {
           user_id: req.user_id,
           order_no: Math.floor(Math.random() * 100 + 1),
-          status: "Menunggu Pembayaran",
+          status: "pending",
         },
         {
           transaction: trx,
@@ -77,7 +77,6 @@ const createOrder = async (req, res, next) => {
       console.log(totalPrice);
       console.log(sum);
       // update total price
-      //   throw new Error("Error");
       await order.update(
         {
           total_price: sum,
@@ -89,29 +88,24 @@ const createOrder = async (req, res, next) => {
     });
 
     // send response
-    return res.status(200).json({
-      message: "success membuat order",
+    return res.status(201).json({
+      message: "success create order",
     });
   } catch (error) {
-    // console.log(error);
     next(error);
   }
 };
 
 const updatePayment = async (req, res, next) => {
   try {
-    // console.log(req.body.orders);
     const order = req.body.orders[0];
-    // console.log("order", order);
-    // console.log("orderid", order.order_id);
     const existOrder = await Orders.findOne({
       where: { id: order.order_id },
     });
-    // console.log(existOrder);
     if (!existOrder) {
       throw {
         code: 404,
-        message: "Tidak ada order",
+        message: "order not found",
       };
     }
     await existOrder.update({
@@ -120,10 +114,9 @@ const updatePayment = async (req, res, next) => {
 
     return res.status(302).json({
       code: 302,
-      message: "Pembayaran Berhasil",
+      message: "payment successful",
     });
   } catch (error) {
-    // console.log(error);
     next(error);
   }
 };
