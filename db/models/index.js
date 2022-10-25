@@ -46,7 +46,7 @@ Items.hasMany(OrderItems, {
 });
 
 Roles.hasMany(Users, {
-  as: "user",
+  as: "users",
   foreignKey: "role_id",
 });
 

@@ -8,12 +8,28 @@ const register = async (req, res, next) => {
   try {
     const bodies = req.body;
 
-    const isUserExist = await Users.findOne({
-      where: {
-        email: bodies.email,
-      },
-      attributes: ["id"],
-    });
+    const [isRoleExist, isUserExist] = await Promise.all([
+      Roles.findOne({
+        where: {
+          id: bodies.role_id,
+        },
+        attributes: ["id", "name"],
+      }),
+      Users.findOne({
+        where: {
+          email: bodies.email,
+        },
+        attributes: ["id"],
+      }),
+    ]);
+
+    // cek apakah role_id nya ada atau tidak
+    if (!isRoleExist) {
+      throw {
+        code: 404,
+        message: "role not found",
+      };
+    }
 
     // cek apakah ada user yang memiliki email yang sudah di register
     // if user exist, send error message
@@ -28,6 +44,7 @@ const register = async (req, res, next) => {
     const hasedPassword = bcrypt.hashSync(bodies.password, 12);
 
     const user = await Users.create({
+      role_id: bodies.role_id,
       email: bodies.email,
       password: hasedPassword,
       name: bodies.name,
@@ -74,7 +91,7 @@ const login = async (req, res, next) => {
     // kalo pwnya beda, throw invalid pw
     if (!isValidPassword) {
       throw {
-        code: 403,
+        code: 401,
         message: "invalid password",
       };
     }
@@ -93,7 +110,57 @@ const login = async (req, res, next) => {
   }
 };
 
+const getUser = async (req, res, next) => {
+  try {
+    const profile = await Users.findByPk(req.user_id, {
+      attributes: ["email", "name", "address", "phone"],
+    });
+    res.status(200).json({
+      code: 200,
+      data: profile,
+      message: "success retrieving user",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (id == req.user_id) {
+      return res
+        .status(403)
+        .json({ message: "cannot delete actively in used user" });
+    }
+    const findUser = await Users.findByPk(id);
+    if (!findUser) return res.status(404).json({ message: "user not found" });
+    await Users.destroy({ where: { id } });
+    res.status(200).json({
+      message: "success delete user",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUser = async (req, res, next) => {
+  try {
+    const bodies = req.body;
+    await Users.update(bodies, { where: { id: req.user_id } });
+    res.status(200).json({
+      message: "success Update User",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
+  getUser,
+  deleteUser,
+  updateUser,
 };
