@@ -24,7 +24,7 @@ const generateFakeItem = (qty) => {
 
   for (let i = 0; i < qty; i++) {
     items.push({
-      user_id: faker.datatype.uuid(),
+      user_id: faker.datatype.number({ min: 1, max: 10 }),
       name: `${faker.commerce.productName()}`,
       price: faker.commerce.price(1000, 100000, 0),
       weight: faker.datatype.number({ min: 1, max: 100 }),

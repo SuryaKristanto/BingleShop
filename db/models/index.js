@@ -1,9 +1,9 @@
 const sequelize = require("./sequelize");
+const Roles = require("./roles");
 const Users = require("./users");
 const Items = require("./items");
 const Orders = require("./orders");
 const OrderItems = require("./order_items");
-const Roles = require("./roles");
 
 Items.belongsTo(Users, {
   as: "user",
@@ -57,9 +57,9 @@ Users.belongsTo(Roles, {
 
 module.exports = {
   sequelize,
+  Roles,
   Users,
   Items,
   Orders,
   OrderItems,
-  Roles,
 };
