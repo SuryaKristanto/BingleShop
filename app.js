@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
-app.use("/auth", userRouter);
+app.use("/user", userRouter);
 app.use("/items", itemRouter);
 app.use("/orders", orderRouter);
 

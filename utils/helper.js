@@ -6,7 +6,7 @@ const generateFakeUser = (qty) => {
 
   for (let i = 0; i < qty; i++) {
     users.push({
-      role_id: 2,
+      role_id: 1,
       email: faker.internet.email().toLowerCase(),
       password: bcrypt.hashSync("admin123", 12),
       name: `${faker.name.firstName()} ${faker.name.lastName()}`,

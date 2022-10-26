@@ -164,7 +164,7 @@ const updateUser = async (req, res, next) => {
     const bodies = req.body;
     await Users.update(bodies, { where: { id: req.user_id } });
     res.status(200).json({
-      message: "success Update User",
+      message: "success update user",
     });
   } catch (error) {
     next(error);
