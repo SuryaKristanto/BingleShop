@@ -9,9 +9,9 @@
     "db:create": "sequelize-cli db:create",
     "db:migrate": "sequelize-cli db:migrate",
     "db:g:migration": "sequelize-cli migration:generate --name",
-    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && sequelize-cli db:migrate",
     "db:g:seed": "sequelize-cli seed:generate --name",
-    "db:seed": "sequelize-cli db:seed:all"
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && sequelize-cli db:migrate"
   },
   "keywords": [
     "e-commerce"
@@ -25,7 +25,8 @@
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
-    "sequelize": "^6.21.3"
+    "sequelize": "^6.21.3",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

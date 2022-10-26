@@ -4,7 +4,7 @@ const {
   getUser,
   deleteUser,
   updateUser,
-} = require("../controllers/users");
+} = require("../controllers/users.controller");
 const {
   roleAuthorization,
 } = require("../middlewares/authorization.middleware");

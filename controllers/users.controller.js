@@ -75,7 +75,14 @@ const login = async (req, res, next) => {
       where: {
         email,
       },
-      attributes: ["id", "password"],
+      attributes: ["id", "role_id", "password"],
+      include: [
+        {
+          model: Roles,
+          as: "role",
+          attributes: ["id", "name"],
+        },
+      ],
     });
 
     // kalo gaada email, throw error user not found
@@ -98,12 +105,18 @@ const login = async (req, res, next) => {
     }
 
     // kalo pwnya sama, generate token
-    const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    const token = jwt.sign(
+      { user_id: user.id, role: user.role.name },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
 
     // kirim token di respon
     return res.status(200).json({
+      code: 200,
+      message: "login succesful",
       token,
     });
   } catch (error) {

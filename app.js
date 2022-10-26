@@ -1,21 +1,40 @@
-const express = require('express')
-const userRouter = require('./routes/users')
-const itemRouter = require('./routes/items.router')
-const orderRouter = require('./routes/orders.router')
+const express = require("express");
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+// router
+const userRouter = require("./routes/users.router");
+const itemRouter = require("./routes/items.router");
+const orderRouter = require("./routes/orders.router");
 
-app.use('/auth', userRouter)
-app.use('/items', itemRouter)
-app.use('/orders', orderRouter)
+// logger
+const logger = require("./middlewares/errorhandler.middleware");
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.get("/", (req, res) => res.send("Hello World!"));
+
+app.use("/auth", userRouter);
+app.use("/items", itemRouter);
+app.use("/orders", orderRouter);
+
+// error handler for unknown endpoint
+app.use("*", (req, res, next) => {
+  return res.status(404).json({
+    message: "endpoint not found",
+  });
+});
+
+// error handler for unexpected error
 app.use((err, req, res, next) => {
-    return res.status(err.code || 500).json({
-        message: err.message || 'Internal server error'
-    })
-})
+  logger.error(JSON.stringify(err));
+  const status = err.code || 500;
+  const message = err.message || "internal server error";
 
-module.exports = app
+  return res.status(status).json({
+    message,
+  });
+});
+
+module.exports = app;
