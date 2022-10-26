@@ -1,12 +1,21 @@
-const { createItem, getItem } = require('../controllers/items.controller')
+const { createItem, getItem } = require("../controllers/items.controller");
 
-const validation = require('../middlewares/validation.middleware')
+const {
+  roleAuthorization,
+} = require("../middlewares/authorization.middleware");
 
-const createItemSchema = require('../validations/create-item.schema')
+const validation = require("../middlewares/validation.middleware");
 
-const router = require('express').Router()
+const createItemSchema = require("../validations/create-item.schema");
 
-router.post('/create-item', validation(createItemSchema), createItem)
-router.get('/get-item', getItem)
+const router = require("express").Router();
 
-module.exports = router
+router.post(
+  "/create-item",
+  roleAuthorization("admin", "member"),
+  validation(createItemSchema),
+  createItem
+);
+router.get("/get-item", getItem);
+
+module.exports = router;
