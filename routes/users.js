@@ -18,8 +18,13 @@ const router = require("express").Router();
 
 router.post("/register", validation(registerSchema), register);
 router.post("/login", validation(loginSchema), login);
-router.get("/profile", getUser);
+router.get("/profile", roleAuthorization("admin", "member"), getUser);
 router.delete("/delete/:id", roleAuthorization("admin"), deleteUser);
-router.patch("/profile/update", validation(updateUserSchema), updateUser);
+router.patch(
+  "/profile/update",
+  roleAuthorization("admin", "member"),
+  validation(updateUserSchema),
+  updateUser
+);
 
 module.exports = router;

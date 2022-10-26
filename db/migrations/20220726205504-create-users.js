@@ -8,7 +8,7 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
-      role: {
+      role_id: {
         type: Sequelize.INTEGER,
         references: {
           model: "roles",
