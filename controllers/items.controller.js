@@ -66,6 +66,12 @@ const deleteItem = async (req, res, next) => {
 
 const updateItem = async (req, res, next) => {
   try {
+    const item = await Items.findByPk(req.params.iditem);
+    if (!item) {
+      return res.status(404).json({
+        message: "item not found",
+      });
+    }
     const bodies = req.body;
     await Items.update(bodies, { where: { id: req.user_id } });
     res.status(200).json({
