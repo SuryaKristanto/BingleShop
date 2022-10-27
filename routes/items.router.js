@@ -30,5 +30,11 @@ router.patch(
   roleAuthorization("admin"),
   updateItem
 );
+router.put(
+  "/update/:iditem",
+  validation(updateItemSchema),
+  roleAuthorization("admin"),
+  updateItem
+);
 
 module.exports = router;

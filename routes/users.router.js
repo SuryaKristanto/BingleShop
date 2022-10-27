@@ -26,5 +26,11 @@ router.patch(
   validation(updateUserSchema),
   updateUser
 );
+router.put(
+  "/profile/update",
+  roleAuthorization("admin", "member"),
+  validation(updateUserSchema),
+  updateUser
+);
 
 module.exports = router;
