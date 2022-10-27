@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Items, sequelize, Orders, OrderItems } = require("../db/models");
+const { Items, sequelize, Orders, OrderItems, Users } = require("../db/models");
 
 const createOrder = async (req, res, next) => {
   try {
@@ -74,8 +74,7 @@ const createOrder = async (req, res, next) => {
       for (let i = 0; i < totalPrice.length; i++) {
         sum += totalPrice[i];
       }
-      console.log(totalPrice);
-      console.log(sum);
+
       // update total price
       await order.update(
         {
@@ -96,9 +95,9 @@ const createOrder = async (req, res, next) => {
   }
 };
 
-const updatePayment = async (req, res, next) => {
+const updateStatus = async (req, res, next) => {
   try {
-    const order = req.body.orders[0];
+    const order = req.body;
     const existOrder = await Orders.findOne({
       where: { id: order.order_id },
     });
@@ -121,7 +120,91 @@ const updatePayment = async (req, res, next) => {
   }
 };
 
+const getOrders = async (req, res, next) => {
+  try {
+    const userId = await Users.findByPk(req.user_id);
+    const orders = await Orders.findAll({
+      where: { user_id: userId.id },
+      attributes: ["order_no", "status", "total_price"],
+      include: [
+        {
+          model: OrderItems,
+          as: "order_items",
+          include: [
+            {
+              model: Items,
+              as: "item",
+              attributes: ["name", "price"],
+            },
+          ],
+          attributes: {
+            exclude: ["id", "order_id", "createdAt", "updatedAt", "deletedAt"],
+          },
+        },
+      ],
+    });
+
+    const orderItem = [];
+    orders.map((order) => {
+      const items = order.order_items;
+      const allItem = [];
+      items.map((item) => {
+        allItem.push({
+          item_id: item.item_id,
+          qty_order: item.qty_order,
+          name: item.item.name,
+          price: item.item.price,
+        });
+      });
+      orderItem.push({
+        order_no: order.order_no,
+        status: order.status,
+        total_price: order.total_price,
+        items: allItem,
+      });
+    });
+
+    if (orders.length === 0) {
+      throw {
+        code: 404,
+        message: "order not found",
+      };
+    }
+
+    return res.status(200).json({
+      message: "success show all order",
+      data: orderItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteOrder = async (req, res, next) => {
+  try {
+    const order = await Orders.findOne({
+      where: {
+        id: req.params.idorder,
+        user_id: req.user_id,
+        status: "pending",
+      },
+    });
+    if (!order) {
+      throw { code: 404, message: "order not found" };
+    }
+    await OrderItems.destroy({ where: { order_id: order.id } });
+    order.destroy();
+    res.status(200).json({
+      message: "success remove order",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createOrder,
-  updatePayment,
+  updateStatus,
+  getOrders,
+  deleteOrder,
 };
