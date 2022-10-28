@@ -12,7 +12,8 @@ const {
 
 const validation = require("../middlewares/validation.middleware");
 
-const cache = require("../middlewares/routeCache");
+var cacheService = require("express-api-cache");
+var cache = cacheService.cache;
 
 const registerSchema = require("../validations/register.schema");
 const loginSchema = require("../validations/login.schema");
@@ -25,7 +26,7 @@ router.post("/login", validation(loginSchema), login);
 router.get(
   "/profile",
   roleAuthorization("admin", "member"),
-  cache(300),
+  cache("5 minutes"),
   getUser
 );
 router.delete("/delete/:id", roleAuthorization("admin"), deleteUser);

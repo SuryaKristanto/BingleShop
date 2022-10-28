@@ -11,7 +11,8 @@ const {
 
 const validation = require("../middlewares/validation.middleware");
 
-const cache = require("../middlewares/routeCache");
+var cacheService = require("express-api-cache");
+var cache = cacheService.cache;
 
 const createItemSchema = require("../validations/create-item.schema");
 const updateItemSchema = require("../validations/update-item.schema");
@@ -24,7 +25,7 @@ router.post(
   validation(createItemSchema),
   createItem
 );
-router.get("/", cache(300), getItem);
+router.get("/", cache("5 minutes"), getItem);
 router.delete("/delete/:iditem", roleAuthorization("admin"), deleteItem);
 router.patch(
   "/update/:iditem",
