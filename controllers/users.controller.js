@@ -4,6 +4,7 @@ const { Users } = require("../db/models");
 const { Roles } = require("../db/models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const register = async (req, res, next) => {
   try {
@@ -41,13 +42,29 @@ const register = async (req, res, next) => {
       };
     }
 
-    // hash pw karna secret
-    const hasedPassword = bcrypt.hashSync(bodies.password, 12);
+    // hash pw karna secret (encrypt)
+    // Hmac
+    const encrypted = crypto
+      .createHmac("sha256", process.env.SECRET)
+      .update(bodies.password)
+      .digest("hex");
+
+    // Cipher
+    // const cipher = crypto.createCipher("aes-192-cbc", process.env.SECRET);
+    // var encrypted = cipher.update(bodies.password, "utf-8", "hex");
+    // encrypted += cipher.final("hex");
+    // console.log(encrypted);
+
+    // decrypt
+    // const decipher = crypto.createDecipher("aes-192-cbc", process.env.SECRET);
+    // var decrypted = decipher.update(encrypted, "hex", "utf-8");
+    // decrypted += decipher.final("utf-8");
+    // console.log(decrypted);
 
     const user = await Users.create({
       role_id: bodies.role_id,
       email: bodies.email,
-      password: hasedPassword,
+      password: encrypted,
       name: bodies.name,
       address: bodies.address,
       phone: bodies.phone,
@@ -94,7 +111,11 @@ const login = async (req, res, next) => {
     }
 
     // kalo ada kita compare pw
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const hasedPassword = await crypto
+      .createHmac("sha256", process.env.SECRET)
+      .update(password)
+      .digest("hex");
+    const isValidPassword = hasedPassword === user.password;
 
     // kalo pwnya beda, throw invalid pw
     if (!isValidPassword) {
