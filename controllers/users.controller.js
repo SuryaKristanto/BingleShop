@@ -5,6 +5,8 @@ const { Roles } = require("../db/models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const extend = require("util")._extend;
+const JsonFind = require("json-find");
 
 const register = async (req, res, next) => {
   try {
@@ -44,10 +46,10 @@ const register = async (req, res, next) => {
 
     // hash pw karna secret (encrypt)
     // Hmac
-    const encrypted = crypto
-      .createHmac("sha256", process.env.SECRET)
-      .update(bodies.password)
-      .digest("hex");
+    // const encrypted = crypto
+    //   .createHmac("sha256", process.env.SECRET)
+    //   .update(bodies.password)
+    //   .digest("hex");
 
     // Cipher
     // const cipher = crypto.createCipher("aes-192-cbc", process.env.SECRET);
@@ -61,14 +63,90 @@ const register = async (req, res, next) => {
     // decrypted += decipher.final("utf-8");
     // console.log(decrypted);
 
-    const user = await Users.create({
+    var data = {};
+
+    let InputData = {
       role_id: bodies.role_id,
       email: bodies.email,
-      password: encrypted,
+      password: bodies.password,
       name: bodies.name,
       address: bodies.address,
       phone: bodies.phone,
-    });
+    };
+    console.log("InputData");
+    console.log(InputData);
+    console.log("------------------------------");
+
+    data = extend({}, InputData);
+    console.log("data");
+    console.log(data);
+    console.log("------------------------------");
+
+    // Get Keys
+    var keys = Object.keys(data);
+    console.log("keys");
+    console.log(keys);
+    // Delete Data yang tidak perlu di enkripsi
+    keys.splice(keys.indexOf("role_id"), 1);
+    console.log("------------------------------");
+
+    // Check ada kosong tidak array nya
+    console.log("Sebelum sort");
+    Object.entries(data).forEach(([key, value]) =>
+      console.log(`${key} : ${value}`)
+    ); // Tampilan json type
+    console.log("------------------------------");
+
+    console.log("Sesudah Sort");
+    keys.sort(); // Sort Keys
+    console.log(keys);
+    console.log("------------------------------");
+
+    console.log("urutan");
+    for (var i = 0; i < keys.length; i++) {
+      console.log(i + " : " + keys[i]);
+    }
+    console.log("------------------------------");
+
+    // Output
+    let output;
+    var docData = JsonFind(data);
+    // console.log('Data value di temukan : ' + docData.checkKey(keys[2]));
+    // console.log('Data ini telah di pilih :   ' + docData.checkKey(keys[1]));
+    output = "";
+
+    for (var i = 0; i < keys.length; i++) {
+      if (Array.isArray(docData.checkKey(keys[i]))) {
+        //Array
+        //output = output + JSON.stringify(docData.checkKey(keys[i])).toUpperCase() + '%';
+        output = output + JSON.stringify(docData.checkKey(keys[i])) + "%";
+      } else {
+        //not Array
+        //output = output + docData.checkKey(keys[i]).toUpperCase() + '%';
+        output = output + docData.checkKey(keys[i]) + "%";
+      }
+    }
+
+    var password = "abcdefg";
+
+    output += password;
+    output = output.toUpperCase();
+    console.log("Hasil Output");
+    console.log(output);
+    console.log("------------------------------");
+
+    // Enkripsi SHA256 Hash
+    // const secret = 'hijkl';
+    // const secret = 'hijkl';
+    // const hash = crypto
+    //   .createHmac("sha256", secret)
+    //   .update(output)
+    //   .digest("hex");
+    var hash = crypto.createHash("sha256").update(output).digest("hex");
+    console.log("Hasil Enkripsi");
+    console.log(hash.toUpperCase());
+
+    const user = await Users.create(InputData);
 
     return res.status(200).json({
       code: 201,
