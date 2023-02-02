@@ -144,7 +144,10 @@ const register = async (req, res, next) => {
     //   .digest("hex");
     var hash = crypto.createHash("sha256").update(output).digest("hex");
     console.log("Hasil Enkripsi");
-    console.log(hash.toUpperCase());
+    var upperCaseHash = hash.toUpperCase();
+    console.log(upperCaseHash);
+    var stringHash = JSON.stringify(upperCaseHash);
+    console.log(stringHash);
 
     const user = await Users.create(InputData);
 
