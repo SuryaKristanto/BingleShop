@@ -46,10 +46,10 @@ const register = async (req, res, next) => {
 
     // hash pw karna secret (encrypt)
     // Hmac
-    // const encrypted = crypto
-    //   .createHmac("sha256", process.env.SECRET)
-    //   .update(bodies.password)
-    //   .digest("hex");
+    const encrypted = crypto
+      .createHmac("sha256", process.env.SECRET)
+      .update(bodies.password)
+      .digest("hex");
 
     // Cipher
     // const cipher = crypto.createCipher("aes-192-cbc", process.env.SECRET);
@@ -149,6 +149,7 @@ const register = async (req, res, next) => {
     var stringHash = JSON.stringify(upperCaseHash);
     console.log(stringHash);
 
+    InputData.password = encrypted;
     const user = await Users.create(InputData);
 
     return res.status(200).json({
