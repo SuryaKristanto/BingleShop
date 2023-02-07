@@ -256,12 +256,17 @@ const login = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const profile = await Users.findByPk(req.user_id, {
-      attributes: ["email", "name", "address", "phone"],
-    });
+    const profile = await queryDB(
+      `SELECT email, name, address, phone FROM users WHERE id = ${req.user_id}`
+    );
+
+    // const profile = await Users.findByPk(req.user_id, {
+    //   attributes: ["email", "name", "address", "phone"],
+    // });
+
     res.status(200).json({
       code: 200,
-      data: profile,
+      data: profile[0],
       message: "success retrieving user",
     });
   } catch (error) {
