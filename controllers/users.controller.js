@@ -298,7 +298,19 @@ const deleteUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const bodies = req.body;
-    await Users.update(bodies, { where: { id: req.user_id } });
+    const update = await queryDB(
+      "UPDATE `users` SET `email`=?,`name`=?,`address`= ?,`phone`=?,`updated_at`=? WHERE `deleted_at` IS NULL AND id = ?",
+      [
+        bodies.email,
+        bodies.name,
+        bodies.address,
+        bodies.phone,
+        today.format("YYYY-MM-DD hh:mm:ss"),
+        req.user_id,
+      ]
+    );
+    console.log(update);
+    // await Users.update(bodies, { where: { id: req.user_id } });
     res.status(200).json({
       message: "success update user",
     });
