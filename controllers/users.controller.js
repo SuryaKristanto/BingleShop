@@ -34,21 +34,6 @@ const register = async (req, res, next) => {
       `SELECT email FROM  users WHERE email = "${bodies.email}"`
     );
 
-    // const [isRoleExist, isUserExist] = await Promise.all([
-    //   Roles.findOne({
-    //     where: {
-    //       id: bodies.role_id,
-    //     },
-    //     attributes: ["id", "name"],
-    //   }),
-    //   Users.findOne({
-    //     where: {
-    //       email: bodies.email,
-    //     },
-    //     attributes: ["id"],
-    //   }),
-    // ]);
-
     // cek apakah role_id nya ada atau tidak
     if (isRoleExist.length < 1) {
       throw {
@@ -208,22 +193,15 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     // cek email tersebut ada ngga di db
-    const user = await Users.findOne({
-      where: {
-        email,
-      },
-      attributes: ["id", "role_id", "password"],
-      include: [
-        {
-          model: Roles,
-          as: "role",
-          attributes: ["id", "name"],
-        },
-      ],
-    });
+
+    var user = await queryDB(
+      `SELECT id, role_id, email, password FROM users WHERE email = "${email}"`
+    );
+
+    console.log(user);
 
     // kalo gaada email, throw error user not found
-    if (!user) {
+    if (user.length < 1) {
       throw {
         code: 404,
         message: "user not found",
@@ -235,7 +213,7 @@ const login = async (req, res, next) => {
       .createHmac("sha256", process.env.SECRET)
       .update(password)
       .digest("hex");
-    const isValidPassword = hasedPassword === user.password;
+    const isValidPassword = hasedPassword === user[0].password;
 
     // kalo pwnya beda, throw invalid pw
     if (!isValidPassword) {
@@ -245,9 +223,20 @@ const login = async (req, res, next) => {
       };
     }
 
+    // menentukan nama role berdasarkan role_id
+    var roleName = "";
+
+    if (user[0].role_id === 1) {
+      roleName = "admin";
+    } else if (user[0].role_id === 2) {
+      roleName = "member";
+    } else {
+      roleName = "guest";
+    }
+
     // kalo pwnya sama, generate token
     const token = jwt.sign(
-      { user_id: user.id, role: user.role.name },
+      { user_id: user[0].id, role: roleName },
       process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_EXPIRES_IN,
