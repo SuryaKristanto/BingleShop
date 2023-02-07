@@ -8,6 +8,8 @@ const crypto = require("crypto");
 const extend = require("util")._extend;
 const JsonFind = require("json-find");
 const connection = require("../db");
+const moment = require("moment");
+const today = moment();
 
 async function queryDB(query, param) {
   return new Promise((resolve) => {
@@ -173,11 +175,17 @@ const register = async (req, res, next) => {
     InputData.password = encrypted;
     // const user = await Users.create(InputData);
     var user = await queryDB(
-      `INSERT INTO users (id,role_id,email,password,name,address,phone,created_at,updated_at) VALUES (${null}, ${
-        InputData.role_id
-      }, '${InputData.email}', '${InputData.password}', '${InputData.name}', '${
-        InputData.address
-      }', ${InputData.phone}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+      `INSERT INTO users (id,role_id,email,password,name,address,phone,created_at,updated_at) VALUES (DEFAULT,?,?,?,?,?,?,?,?)`,
+      [
+        InputData.role_id,
+        InputData.email,
+        InputData.password,
+        InputData.name,
+        InputData.address,
+        InputData.phone,
+        today.format("YYYY-MM-DD hh:mm:ss"),
+        today.format("YYYY-MM-DD hh:mm:ss"),
+      ]
     );
 
     console.log(user);
