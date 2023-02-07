@@ -283,9 +283,10 @@ const deleteUser = async (req, res, next) => {
         .status(403)
         .json({ message: "cannot delete actively in used user" });
     }
-    const findUser = await Users.findByPk(id);
-    if (!findUser) return res.status(404).json({ message: "user not found" });
-    await Users.destroy({ where: { id } });
+    const findUser = await queryDB(`SELECT * FROM users WHERE id = ${id}`);
+    if (findUser.length < 1)
+      return res.status(404).json({ message: "user not found" });
+    await queryDB(`DELETE FROM users WHERE id = ${id}`);
     res.status(200).json({
       message: "success delete user",
     });
