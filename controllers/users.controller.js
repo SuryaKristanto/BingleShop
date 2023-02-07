@@ -186,7 +186,7 @@ const register = async (req, res, next) => {
       code: 201,
       message: "success create user",
       data: {
-        name: Use.name,
+        name: InputData.name,
         email: InputData.email,
       },
     });
