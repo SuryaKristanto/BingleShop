@@ -7,37 +7,59 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const extend = require("util")._extend;
 const JsonFind = require("json-find");
+const connection = require("../db");
+
+async function queryDB(query, param) {
+  return new Promise((resolve) => {
+    connection.query(query, param, function (err, result, fields) {
+      if (err) {
+        //resolve('err : ' + err.stack);
+        resolve("err :" + err.message);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 
 const register = async (req, res, next) => {
   try {
     const bodies = req.body;
+    var isRoleExist = await queryDB(
+      `SELECT * FROM roles WHERE id = ${bodies.role_id}`
+    );
+    var isUserExist = await queryDB(
+      `SELECT email FROM  users WHERE email = "${bodies.email}"`
+    );
 
-    const [isRoleExist, isUserExist] = await Promise.all([
-      Roles.findOne({
-        where: {
-          id: bodies.role_id,
-        },
-        attributes: ["id", "name"],
-      }),
-      Users.findOne({
-        where: {
-          email: bodies.email,
-        },
-        attributes: ["id"],
-      }),
-    ]);
+    // const [isRoleExist, isUserExist] = await Promise.all([
+    //   Roles.findOne({
+    //     where: {
+    //       id: bodies.role_id,
+    //     },
+    //     attributes: ["id", "name"],
+    //   }),
+    //   Users.findOne({
+    //     where: {
+    //       email: bodies.email,
+    //     },
+    //     attributes: ["id"],
+    //   }),
+    // ]);
 
     // cek apakah role_id nya ada atau tidak
-    if (!isRoleExist) {
+    if (isRoleExist.length < 1) {
       throw {
         code: 404,
         message: "role not found",
       };
     }
 
+    console.log(isRoleExist);
+
     // cek apakah ada user yang memiliki email yang sudah di register
     // if user exist, send error message
-    if (isUserExist) {
+    if (!isUserExist.length < 1) {
       throw {
         code: 400,
         message: "email already exist",
@@ -137,7 +159,6 @@ const register = async (req, res, next) => {
 
     // Enkripsi SHA256 Hash
     // const secret = 'hijkl';
-    // const secret = 'hijkl';
     // const hash = crypto
     //   .createHmac("sha256", secret)
     //   .update(output)
@@ -150,14 +171,23 @@ const register = async (req, res, next) => {
     console.log(stringHash);
 
     InputData.password = encrypted;
-    const user = await Users.create(InputData);
+    // const user = await Users.create(InputData);
+    var user = await queryDB(
+      `INSERT INTO users (id,role_id,email,password,name,address,phone,created_at,updated_at) VALUES (${null}, ${
+        InputData.role_id
+      }, '${InputData.email}', '${InputData.password}', '${InputData.name}', '${
+        InputData.address
+      }', ${InputData.phone}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+    );
+
+    console.log(user);
 
     return res.status(200).json({
       code: 201,
       message: "success create user",
       data: {
-        name: user.name,
-        email: user.email,
+        name: Use.name,
+        email: InputData.email,
       },
     });
   } catch (error) {
