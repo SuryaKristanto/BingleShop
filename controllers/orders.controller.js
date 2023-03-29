@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const { Items, sequelize, Orders, OrderItems, Users } = require("../db/models");
+const uuid = require("uuid");
 
 const createOrder = async (req, res, next) => {
   try {
@@ -30,7 +31,7 @@ const createOrder = async (req, res, next) => {
       const order = await Orders.create(
         {
           user_id: req.user_id,
-          order_no: Math.floor(Math.random() * 100 + 1),
+          order_no: uuid.v4(),
           status: "pending",
         },
         {
