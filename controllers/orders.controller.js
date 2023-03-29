@@ -26,12 +26,16 @@ const createOrder = async (req, res, next) => {
       };
     }
 
+    const timestamp = new Date().getTime();
+    const random = Math.floor(Math.random() * 1000);
+    const order_no = parseInt(`${timestamp}${random}`);
+
     await sequelize.transaction(async (trx) => {
       // create order dan
       const order = await Orders.create(
         {
           user_id: req.user_id,
-          order_no: uuid.v4(),
+          order_no: order_no,
           status: "pending",
         },
         {
