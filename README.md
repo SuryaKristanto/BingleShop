@@ -73,7 +73,3 @@ npm run start:dev
 ```
 npm run start
 ```
-
-## Pattern
-
-Design Pattern yang saya gunakan adalah monolithic karena skalanya yang kecil sehingga lebih efisien. Saya menggunakan MCR(Model, Controller, dan Router) karena saya hanya membuat sistem back end untuk proyek ini. Pertama saya akan membuat file-file yang berkaitan dengan database di model, kemudian saya membuat fungsi untuk endpoint sesuai kategorinya di controller, baru yang terakhir saya taruh fungsi tersebut di router untuk diarahkan ke masing-masing endpoint.
