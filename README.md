@@ -54,7 +54,7 @@
 
 ## Run the app
 
-Sebelum menjalankan proyek, terlebih dahulu buat database PostgreSQL dan isi env yang diperlukan di .env.example (setelah diisi ubah nama filenya menjadi .env saja). Setelah itu lakukan migrasi tabel dan seeder menggunakan script yang sudah tertera di package.json.
+Before running the project, first create a PostgreSQL database and fill in the required environment in ".env.example" (once filled, change the file name to ".env" only). After that, migrate the tables and seeders using the script listed in package.json.
 
 ```
 npm run db:migrate
@@ -64,7 +64,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-Jalankan proyek menggunakan script start:dev maupun start, proyek sudah siap untuk dijalankan secara local dan di test.
+Run the project using start:dev or start script, and the project is ready to be run locally and tested.
 
 ```
 npm run start:dev
@@ -76,4 +76,4 @@ npm run start
 
 ## Pattern
 
-Design Pattern yang saya gunakan adalah monolithic karena skalanya yang kecil sehingga lebih efisien. Saya menggunakan MCR(Model, Controller, dan Router) karena saya hanya membuat sistem back end untuk proyek ini. Pertama saya akan membuat file-file yang berkaitan dengan database di model, kemudian saya membuat fungsi untuk endpoint sesuai kategorinya di controller, baru yang terakhir saya taruh fungsi tersebut di router untuk diarahkan ke masing-masing endpoint.
+The design pattern that I use is monolithic because the scale is small, so it is more efficient. I use MCR (Model, Controller, and Router) because I only create a back-end system for this project. First I will create files related to the database in the model, then I will create functions for endpoints according to their category in the controller, and finally I will put the function in the router to be directed to each endpoint.
